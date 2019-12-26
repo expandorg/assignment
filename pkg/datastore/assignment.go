@@ -2,6 +2,7 @@ package datastore
 
 import (
 	"fmt"
+	"strconv"
 	"strings"
 
 	"github.com/gemsorg/assignment/pkg/assignment"
@@ -11,6 +12,7 @@ import (
 type Storage interface {
 	GetAssignments(assignment.Params) (assignment.Assignments, error)
 	GetAssignment(id string) (*assignment.Assignment, error)
+	CreateAssignment(assignment.NewAssignment) (*assignment.Assignment, error)
 }
 
 type AssignmentStore struct {
@@ -65,4 +67,28 @@ func (as *AssignmentStore) GetAssignment(id string) (*assignment.Assignment, err
 	}
 
 	return assignment, nil
+}
+
+func (as *AssignmentStore) CreateAssignment(a assignment.NewAssignment) (*assignment.Assignment, error) {
+	newAs := &assignment.Assignment{}
+	result, err := as.DB.Exec(
+		"INSERT INTO assignments (job_id, task_id, worker_id) VALUES (?,?,?)",
+		a.JobID, a.TaskID, a.WorkerID)
+
+	if err != nil {
+		return newAs, err
+	}
+
+	id, err := result.LastInsertId()
+	if err != nil {
+		return newAs, err
+	}
+
+	assi, err := as.GetAssignment(strconv.FormatInt(id, 10))
+
+	if err != nil {
+		return newAs, err
+	}
+
+	return assi, nil
 }

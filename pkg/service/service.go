@@ -12,6 +12,7 @@ type AssignmentService interface {
 	SetAuthData(data authentication.AuthData)
 	GetAssignments(assignment.Params) (assignment.Assignments, error)
 	GetAssignment(id string) (*assignment.Assignment, error)
+	CreateAssignment(assignment.NewAssignment) (*assignment.Assignment, error)
 }
 
 type service struct {
@@ -40,4 +41,8 @@ func (s *service) GetAssignments(p assignment.Params) (assignment.Assignments, e
 
 func (s *service) GetAssignment(id string) (*assignment.Assignment, error) {
 	return s.store.GetAssignment(id)
+}
+
+func (s *service) CreateAssignment(a assignment.NewAssignment) (*assignment.Assignment, error) {
+	return s.store.CreateAssignment(a)
 }

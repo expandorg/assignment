@@ -21,7 +21,8 @@ func New(
 	r := mux.NewRouter()
 
 	r.Handle("/_health", healthchecker.MakeHandler(s)).Methods("GET")
-	r.Handle("/assignments", assignmentfetcher.MakeAssignmentFetcherHandler(s)).Methods("GET")
+	r.Handle("/assignments", assignmentfetcher.MakeAssignmentsFetcherHandler(s)).Methods("GET")
+	r.Handle("/assignments/{assignment_id}", assignmentfetcher.MakeAssignmentFetcherHandler(s)).Methods("GET")
 	r.Use(authentication.AuthMiddleware)
 	return withHandlers(r)
 }

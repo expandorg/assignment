@@ -11,6 +11,7 @@ type AssignmentService interface {
 	Healthy() bool
 	SetAuthData(data authentication.AuthData)
 	GetAssignments(assignment.Params) (assignment.Assignments, error)
+	GetAssignment(id string) (*assignment.Assignment, error)
 }
 
 type service struct {
@@ -35,4 +36,8 @@ func (s *service) SetAuthData(data authentication.AuthData) {
 
 func (s *service) GetAssignments(p assignment.Params) (assignment.Assignments, error) {
 	return s.store.GetAssignments(p)
+}
+
+func (s *service) GetAssignment(id string) (*assignment.Assignment, error) {
+	return s.store.GetAssignment(id)
 }

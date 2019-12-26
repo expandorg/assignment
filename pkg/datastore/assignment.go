@@ -10,6 +10,7 @@ import (
 
 type Storage interface {
 	GetAssignments(assignment.Params) (assignment.Assignments, error)
+	GetAssignment(id string) (*assignment.Assignment, error)
 }
 
 type AssignmentStore struct {
@@ -54,4 +55,14 @@ func (as *AssignmentStore) GetAssignments(p assignment.Params) (assignment.Assig
 	}
 
 	return assignments, nil
+}
+func (as *AssignmentStore) GetAssignment(id string) (*assignment.Assignment, error) {
+	assignment := &assignment.Assignment{}
+	err := as.DB.Get(assignment, "SELECT * FROM assignments WHERE id = ?", id)
+
+	if err != nil {
+		return nil, err
+	}
+
+	return assignment, nil
 }

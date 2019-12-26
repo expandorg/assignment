@@ -23,6 +23,23 @@ func makeAssignmentsFetcherEndpoint(svc service.AssignmentService) endpoint.Endp
 	}
 }
 
+func makeAssignmentFetcherEndpoint(svc service.AssignmentService) endpoint.Endpoint {
+	return func(ctx context.Context, request interface{}) (interface{}, error) {
+		data, _ := authentication.ParseAuthData(ctx)
+		svc.SetAuthData(data)
+		req := request.(AssignmentRequest)
+		p, err := svc.GetAssignment(req.AssignmentID)
+		if err != nil {
+			return p, errorResponse(err)
+		}
+		return p, nil
+	}
+}
+
 func errorResponse(err error) *apierror.APIError {
 	return apierror.New(500, err.Error(), err)
+}
+
+type AssignmentRequest struct {
+	AssignmentID string
 }

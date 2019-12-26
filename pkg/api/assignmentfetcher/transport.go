@@ -3,17 +3,27 @@ package assignmentfetcher
 import (
 	"context"
 	"encoding/json"
+	"fmt"
 	"net/http"
 
 	"github.com/gemsorg/assignment/pkg/assignment"
 	"github.com/gemsorg/assignment/pkg/service"
 	kithttp "github.com/go-kit/kit/transport/http"
+	"github.com/gorilla/mux"
 )
 
-func MakeAssignmentFetcherHandler(s service.AssignmentService) http.Handler {
+func MakeAssignmentsFetcherHandler(s service.AssignmentService) http.Handler {
 	return kithttp.NewServer(
 		makeAssignmentsFetcherEndpoint(s),
 		decodeAssignmentsFetcherRequest,
+		encodeResponse,
+	)
+}
+
+func MakeAssignmentFetcherHandler(s service.AssignmentService) http.Handler {
+	return kithttp.NewServer(
+		makeAssignmentFetcherEndpoint(s),
+		decodeAssignmentFetcherRequest,
 		encodeResponse,
 	)
 }
@@ -45,4 +55,14 @@ func decodeAssignmentsFetcherRequest(_ context.Context, r *http.Request) (interf
 	}
 
 	return as, nil
+}
+
+func decodeAssignmentFetcherRequest(_ context.Context, r *http.Request) (interface{}, error) {
+	vars := mux.Vars(r)
+	var ok bool
+	assignmentID, ok := vars["assignment_id"]
+	if !ok {
+		return nil, fmt.Errorf("missing assignment_id parameter")
+	}
+	return AssignmentRequest{AssignmentID: assignmentID}, nil
 }

@@ -6,6 +6,13 @@ import (
 	"github.com/gemsorg/assignment/pkg/nulls"
 )
 
+type Params struct {
+	WorkerID   string
+	JobID      string
+	TaskID     string
+	ResponseID string
+}
+
 type Assignment struct {
 	ID         uint64     `db:"id" json:"id"`
 	JobID      uint64     `db:"job_id" json:"job_id"`

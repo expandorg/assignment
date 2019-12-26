@@ -24,20 +24,25 @@ func encodeResponse(ctx context.Context, w http.ResponseWriter, response interfa
 }
 
 func decodeAssignmentsFetcherRequest(_ context.Context, r *http.Request) (interface{}, error) {
-	return assignment.Assignments{}, nil
-}
+	as := assignment.Params{}
+	params := r.URL.Query()
 
-// func decodeAssignmentsFetcherRequest(_ context.Context, r *http.Request) (interface{}, error) {
-// 	dr := WorkerDisputesRequest{}
-// 	vars := mux.Vars(r)
-// 	workerID, ok := vars["worker_id"]
-// 	if !ok {
-// 		return nil, errorResponse(&apierror.ErrBadRouting{Param: "dispute_id"})
-// 	}
-// 	id, err := strconv.ParseUint(workerID, 10, 64)
-// 	if err != nil {
-// 		return nil, errorResponse(&apierror.ErrBadRouting{Param: "dispute_id"})
-// 	}
-// 	dr.WorkerID = id
-// 	return dr, nil
-// }
+	workerID, ok := params["worker_id"]
+	if ok && len(workerID) > 0 {
+		as.WorkerID = workerID[0]
+	}
+	jobID, ok := params["job_id"]
+	if ok && len(jobID) > 0 {
+		as.JobID = jobID[0]
+	}
+	taskID, ok := params["task_id"]
+	if ok && len(taskID) > 0 {
+		as.TaskID = taskID[0]
+	}
+	responseID, ok := params["response_id"]
+	if ok && len(responseID) > 0 {
+		as.ResponseID = responseID[0]
+	}
+
+	return as, nil
+}

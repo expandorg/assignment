@@ -10,7 +10,7 @@ import (
 type AssignmentService interface {
 	Healthy() bool
 	SetAuthData(data authentication.AuthData)
-	GetAssignments() (assignment.Assignments, error)
+	GetAssignments(assignment.Params) (assignment.Assignments, error)
 }
 
 type service struct {
@@ -33,6 +33,6 @@ func (s *service) SetAuthData(data authentication.AuthData) {
 	s.authorizor.SetAuthData(data)
 }
 
-func (s *service) GetAssignments() (assignment.Assignments, error) {
-	return s.store.GetAssignments()
+func (s *service) GetAssignments(p assignment.Params) (assignment.Assignments, error) {
+	return s.store.GetAssignments(p)
 }

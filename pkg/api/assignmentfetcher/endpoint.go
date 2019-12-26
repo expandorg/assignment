@@ -4,6 +4,7 @@ import (
 	"context"
 
 	"github.com/gemsorg/assignment/pkg/apierror"
+	"github.com/gemsorg/assignment/pkg/assignment"
 	"github.com/gemsorg/assignment/pkg/authentication"
 	"github.com/gemsorg/assignment/pkg/service"
 	"github.com/go-kit/kit/endpoint"
@@ -13,7 +14,8 @@ func makeAssignmentsFetcherEndpoint(svc service.AssignmentService) endpoint.Endp
 	return func(ctx context.Context, request interface{}) (interface{}, error) {
 		data, _ := authentication.ParseAuthData(ctx)
 		svc.SetAuthData(data)
-		assignments, err := svc.GetAssignments()
+		params := request.(assignment.Params)
+		assignments, err := svc.GetAssignments(params)
 		if err != nil {
 			return nil, errorResponse(err)
 		}

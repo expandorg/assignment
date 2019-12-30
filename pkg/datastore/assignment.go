@@ -6,6 +6,7 @@ import (
 	"strings"
 
 	"github.com/gemsorg/assignment/pkg/assignment"
+	"github.com/gemsorg/assignment/pkg/whitelist"
 	"github.com/jmoiron/sqlx"
 )
 
@@ -14,6 +15,7 @@ type Storage interface {
 	GetAssignment(id string) (*assignment.Assignment, error)
 	CreateAssignment(assignment.NewAssignment) (*assignment.Assignment, error)
 	GetSettings(jobID uint64) (*assignment.Settings, error)
+	GetWhitelist(jobID uint64, workerID uint64) (*whitelist.Whitelist, error)
 }
 
 type AssignmentStore struct {
@@ -104,4 +106,15 @@ func (as *AssignmentStore) GetSettings(jobID uint64) (*assignment.Settings, erro
 	}
 
 	return set, nil
+}
+
+func (as *AssignmentStore) GetWhitelist(jobID uint64, workerID uint64) (*whitelist.Whitelist, error) {
+	wl := &whitelist.Whitelist{}
+	err := as.DB.Get(wl, "SELECT * FROM whitelists WHERE job_id = ? AND worker_id = ?", jobID, workerID)
+
+	if err != nil {
+		return nil, err
+	}
+
+	return wl, nil
 }

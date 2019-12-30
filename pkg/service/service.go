@@ -45,6 +45,13 @@ func (s *service) GetAssignment(id string) (*assignment.Assignment, error) {
 }
 
 func (s *service) CreateAssignment(a assignment.NewAssignment, set *assignment.Settings) (*assignment.Assignment, error) {
+	// if job has a whitelist, check if worker is part of it
+	if set.Whitelist {
+		wl, err := s.store.GetWhitelist(a.JobID, a.WorkerID)
+		if wl == nil || err != nil {
+			return nil, assignment.WorkerNotWhitelisted{}
+		}
+	}
 	// Check if the assignment is allowed
 	allowed, err := a.IsAllowed(set)
 	if !allowed {

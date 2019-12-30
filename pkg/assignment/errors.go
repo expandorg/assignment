@@ -29,3 +29,9 @@ type WorkerNotEnoughFunds struct{}
 func (err WorkerNotEnoughFunds) Error() string {
 	return "Worker doesn't have enough funds"
 }
+
+type WorkerNotWhitelisted struct{}
+
+func (err WorkerNotWhitelisted) Error() string {
+	return "Worker has not been whitelisted"
+}

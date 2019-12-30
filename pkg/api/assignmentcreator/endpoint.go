@@ -15,7 +15,12 @@ func makeAssignmentCreatorEndpoint(svc service.AssignmentService) endpoint.Endpo
 		data, _ := authentication.ParseAuthData(ctx)
 		svc.SetAuthData(data)
 		req := request.(assignment.NewAssignment)
-		saved, err := svc.CreateAssignment(req)
+		settings, err := svc.GetSettings(req.JobID)
+		if err != nil {
+			return nil, errorResponse(err)
+		}
+
+		saved, err := svc.CreateAssignment(req, settings)
 		if err != nil {
 			return nil, errorResponse(err)
 		}

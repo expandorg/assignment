@@ -2,6 +2,7 @@ package nulls
 
 import (
 	"database/sql"
+	"database/sql/driver"
 	"encoding/json"
 )
 
@@ -44,4 +45,11 @@ func (n *Int64) UnmarshalJSON(data []byte) error {
 		n.Valid = false
 	}
 	return nil
+}
+
+func (n *Int64) Value() (driver.Value, error) {
+	if !n.Valid {
+		return nil, nil
+	}
+	return n.Int64, nil
 }

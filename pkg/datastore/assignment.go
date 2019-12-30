@@ -13,6 +13,7 @@ type Storage interface {
 	GetAssignments(assignment.Params) (assignment.Assignments, error)
 	GetAssignment(id string) (*assignment.Assignment, error)
 	CreateAssignment(assignment.NewAssignment) (*assignment.Assignment, error)
+	GetSettings(jobID uint64) (*assignment.Settings, error)
 }
 
 type AssignmentStore struct {
@@ -58,6 +59,7 @@ func (as *AssignmentStore) GetAssignments(p assignment.Params) (assignment.Assig
 
 	return assignments, nil
 }
+
 func (as *AssignmentStore) GetAssignment(id string) (*assignment.Assignment, error) {
 	assignment := &assignment.Assignment{}
 	err := as.DB.Get(assignment, "SELECT * FROM assignments WHERE id = ?", id)
@@ -91,4 +93,15 @@ func (as *AssignmentStore) CreateAssignment(a assignment.NewAssignment) (*assign
 	}
 
 	return assi, nil
+}
+
+func (as *AssignmentStore) GetSettings(jobID uint64) (*assignment.Settings, error) {
+	set := &assignment.Settings{}
+	err := as.DB.Get(set, "SELECT * FROM settings WHERE job_id = ?", jobID)
+
+	if err != nil {
+		return nil, err
+	}
+
+	return set, nil
 }

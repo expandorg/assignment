@@ -12,7 +12,8 @@ type AssignmentService interface {
 	SetAuthData(data authentication.AuthData)
 	GetAssignments(assignment.Params) (assignment.Assignments, error)
 	GetAssignment(id string) (*assignment.Assignment, error)
-	CreateAssignment(assignment.NewAssignment) (*assignment.Assignment, error)
+	CreateAssignment(assignment.NewAssignment, *assignment.Settings) (*assignment.Assignment, error)
+	GetSettings(jobID uint64) (*assignment.Settings, error)
 }
 
 type service struct {
@@ -43,6 +44,16 @@ func (s *service) GetAssignment(id string) (*assignment.Assignment, error) {
 	return s.store.GetAssignment(id)
 }
 
-func (s *service) CreateAssignment(a assignment.NewAssignment) (*assignment.Assignment, error) {
+func (s *service) CreateAssignment(a assignment.NewAssignment, set *assignment.Settings) (*assignment.Assignment, error) {
+	// Check if the assignment is allowed
+	allowed, err := a.IsAllowed(set)
+	if !allowed {
+		return nil, err
+	}
+
 	return s.store.CreateAssignment(a)
+}
+
+func (s *service) GetSettings(jobID uint64) (*assignment.Settings, error) {
+	return s.store.GetSettings(jobID)
 }

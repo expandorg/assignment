@@ -19,6 +19,7 @@ type Assignment struct {
 	TaskID     uint64      `db:"task_id" json:"task_id"`
 	ResponseID nulls.Int64 `db:"response_id" json:"response_id"`
 	WorkerID   uint64      `db:"worker_id" json:"worker_id"`
+	Active     bool        `db:"active" json:"active"`
 	AssignedAt time.Time   `db:"assigned_at" json:"assigned_at"`
 	ExpiresAt  nulls.Time  `db:"expires_at" json:"expires_at"`
 }

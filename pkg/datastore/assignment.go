@@ -17,6 +17,7 @@ type Storage interface {
 	CreateAssignment(assignment.NewAssignment) (*assignment.Assignment, error)
 	GetSettings(jobID uint64) (*assignment.Settings, error)
 	GetWhitelist(jobID uint64, workerID uint64) (*whitelist.Whitelist, error)
+	WorkerAlreadyAssigned(jobID uint64, workerID uint64) (bool, error)
 }
 
 type AssignmentStore struct {
@@ -124,4 +125,15 @@ func (as *AssignmentStore) GetWhitelist(jobID uint64, workerID uint64) (*whiteli
 	}
 
 	return wl, nil
+}
+
+func (as *AssignmentStore) WorkerAlreadyAssigned(jobID uint64, workerID uint64) (bool, error) {
+	a := &assignment.Assignment{}
+	err := as.DB.Get(a, "SELECT * FROM assignments WHERE job_id = ? AND worker_id = ? AND active IS TRUE", jobID, workerID)
+
+	if err != nil {
+		return false, err
+	}
+
+	return true, nil
 }

@@ -58,6 +58,10 @@ func (s *service) CreateAssignment(a assignment.NewAssignment, set *assignment.S
 		return nil, err
 	}
 
+	// Get worker's assignment for this job
+	assigned, err := s.store.WorkerAlreadyAssigned(a.JobID, a.WorkerID)
+	a.WorkerAlreadyAssigned = assigned
+
 	return s.store.CreateAssignment(a)
 }
 

@@ -55,7 +55,7 @@ func TestNewAssignment_IsAllowed(t *testing.T) {
 			false,
 		},
 		{
-			"singly assignment: returns true if worker is already assigned",
+			"singly assignment: returns false if worker is already assigned",
 			MakeNewAssignment(true, false, true, true, 0),
 			args{
 				permutations["OneAssignmentRepeat"],
@@ -144,15 +144,6 @@ func TestNewAssignment_IsAllowed(t *testing.T) {
 			false,
 			true,
 		},
-		{
-			"returns false if worker doesn't have enough funds",
-			MakeNewAssignment(false, false, true, false, 0),
-			args{
-				permutations["AllAssignmentRepeat"],
-			},
-			false,
-			true,
-		},
 	}
 	for _, tt := range tests {
 		t.Run(tt.name, func(t *testing.T) {
@@ -160,11 +151,10 @@ func TestNewAssignment_IsAllowed(t *testing.T) {
 				JobID:                  tt.fields.JobID,
 				TaskID:                 tt.fields.TaskID,
 				WorkerID:               tt.fields.WorkerID,
-				JobAssignmentCount:     tt.fields.JobAssignmentCount,
-				OnboardingStatus:       tt.fields.OnboardingStatus,
+				WorkerAssignmentCount:  tt.fields.WorkerAssignmentCount,
+				OnboardingSuccess:      tt.fields.OnboardingSuccess,
 				WorkerAlreadyAssigned:  tt.fields.WorkerAlreadyAssigned,
 				WorkerAlreadyResponded: tt.fields.WorkerAlreadyResponded,
-				WorkerHasFunds:         tt.fields.WorkerHasFunds,
 			}
 			got, err := a.IsAllowed(tt.args.set)
 			if (err != nil) != tt.wantErr {
@@ -183,10 +173,9 @@ func MakeNewAssignment(assigned, responded, onboarding, funds bool, aCount int) 
 		JobID:                  1,
 		TaskID:                 1,
 		WorkerID:               1,
-		JobAssignmentCount:     aCount,
-		OnboardingStatus:       onboarding,
+		WorkerAssignmentCount:  aCount,
+		OnboardingSuccess:      onboarding,
 		WorkerAlreadyAssigned:  assigned,
 		WorkerAlreadyResponded: responded,
-		WorkerHasFunds:         funds,
 	}
 }

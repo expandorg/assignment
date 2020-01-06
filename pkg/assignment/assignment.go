@@ -28,26 +28,26 @@ type NewAssignment struct {
 	JobID                  uint64 `json:"job_id"`
 	TaskID                 uint64 `json:"task_id"`
 	WorkerID               uint64 `json:"worker_id"`
-	JobAssignmentCount     int    `json:"job_assignment_count"`
-	OnboardingStatus       bool   `json:"onboarding_status"`
-	WorkerAlreadyAssigned  bool   `json:"worker_already_assigned"`
+	WorkerAssignmentCount  int    `json:"worker_assignment_count"`
+	OnboardingSuccess      bool   `json:"onboarding_success"`
 	WorkerAlreadyResponded bool   `json:"worker_already_responded"`
-	WorkerHasFunds         bool   `json:"worker_has_funds"`
+	WorkerAlreadyAssigned  bool   // This comes internally from this service
 }
 
 type Assignments []Assignment
 
 func (a NewAssignment) IsAllowed(set *Settings) (bool, error) {
 	// check onboarding
-	if !a.OnboardingStatus {
+	if !a.OnboardingSuccess {
 		return false, OnboardingFailure{}
 	}
-	// We reached the limit of the total assignment for the job
-	if set.Limit != 0 && set.Limit == a.JobAssignmentCount {
+
+	// We reached the limit of the total assignment for the job and worker
+	if set.Limit != 0 && set.Limit == a.WorkerAssignmentCount {
 		return false, JobLimitReached{}
 	}
 
-	// Only allow the worker to be once at a time
+	// Only allow the worker to be assigned once
 	if set.Singly && a.WorkerAlreadyAssigned {
 		return false, NoAssignmentRepeat{}
 	}
@@ -55,10 +55,6 @@ func (a NewAssignment) IsAllowed(set *Settings) (bool, error) {
 	// Worker can only respond once for the the job
 	if !set.Repeat && a.WorkerAlreadyResponded {
 		return false, NoResponseRepeat{}
-	}
-
-	if !a.WorkerHasFunds {
-		return false, WorkerNotEnoughFunds{}
 	}
 
 	return true, nil

@@ -7,6 +7,7 @@ import (
 
 	"github.com/gemsorg/assignment/pkg/assignment"
 	"github.com/gemsorg/assignment/pkg/whitelist"
+	"github.com/go-sql-driver/mysql"
 	"github.com/jmoiron/sqlx"
 )
 
@@ -74,24 +75,30 @@ func (as *AssignmentStore) GetAssignment(id string) (*assignment.Assignment, err
 }
 
 func (as *AssignmentStore) CreateAssignment(a assignment.NewAssignment) (*assignment.Assignment, error) {
-	newAs := &assignment.Assignment{}
 	result, err := as.DB.Exec(
 		"INSERT INTO assignments (job_id, task_id, worker_id) VALUES (?,?,?)",
 		a.JobID, a.TaskID, a.WorkerID)
 
 	if err != nil {
-		return newAs, err
+		if err != nil {
+			mysqlerr, ok := err.(*mysql.MySQLError)
+			// duplicate entry worker_id & job_id
+			if ok && mysqlerr.Number == 1062 {
+				return nil, AlreadyAssigned{}
+			}
+		}
+		return nil, err
 	}
 
 	id, err := result.LastInsertId()
 	if err != nil {
-		return newAs, err
+		return nil, err
 	}
 
 	assi, err := as.GetAssignment(strconv.FormatInt(id, 10))
 
 	if err != nil {
-		return newAs, err
+		return nil, err
 	}
 
 	return assi, nil

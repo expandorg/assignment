@@ -4,6 +4,7 @@ import (
 	"net/http"
 
 	"github.com/gemsorg/assignment/pkg/api/assignmentcreator"
+	assignmentdestroyer "github.com/gemsorg/assignment/pkg/api/assignmentdestroyer/assignmentfetcher"
 	"github.com/gemsorg/assignment/pkg/api/assignmentfetcher"
 
 	"github.com/gemsorg/assignment/pkg/authentication"
@@ -25,6 +26,7 @@ func New(
 	r.Handle("/assignments", assignmentfetcher.MakeAssignmentsFetcherHandler(s)).Methods("GET")
 	r.Handle("/assignments/{assignment_id}", assignmentfetcher.MakeAssignmentFetcherHandler(s)).Methods("GET")
 	r.Handle("/assignments", assignmentcreator.MakeHandler(s)).Methods("POST")
+	r.Handle("/assignments", assignmentdestroyer.MakeHandler(s)).Methods("DELETE")
 	r.Use(authentication.AuthMiddleware)
 	return withHandlers(r)
 }

@@ -18,6 +18,7 @@ type Storage interface {
 	GetSettings(jobID uint64) (*assignment.Settings, error)
 	GetWhitelist(jobID uint64, workerID uint64) (*whitelist.Whitelist, error)
 	WorkerAlreadyAssigned(jobID uint64, workerID uint64) (bool, error)
+	DeleteAssignment(workerID uint64, jobID uint64) (bool, error)
 }
 
 type AssignmentStore struct {
@@ -133,6 +134,21 @@ func (as *AssignmentStore) WorkerAlreadyAssigned(jobID uint64, workerID uint64) 
 
 	if err != nil {
 		return false, err
+	}
+
+	return true, nil
+}
+
+func (as *AssignmentStore) DeleteAssignment(workerID uint64, jobID uint64) (bool, error) {
+	result, err := as.DB.Exec("DELETE FROM assignments WHERE worker_id = ? AND job_id = ?", workerID, jobID)
+	if err != nil {
+		return false, err
+	}
+
+	numAffected, err := result.RowsAffected()
+
+	if numAffected == 0 {
+		return false, AssignmentNotFound{workerID, jobID}
 	}
 
 	return true, nil

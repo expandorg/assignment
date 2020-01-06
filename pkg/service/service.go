@@ -14,6 +14,7 @@ type AssignmentService interface {
 	GetAssignment(id string) (*assignment.Assignment, error)
 	CreateAssignment(assignment.NewAssignment, *assignment.Settings) (*assignment.Assignment, error)
 	GetSettings(jobID uint64) (*assignment.Settings, error)
+	DeleteAssignment(workerID uint64, jobID uint64) (bool, error)
 }
 
 type service struct {
@@ -67,4 +68,8 @@ func (s *service) CreateAssignment(a assignment.NewAssignment, set *assignment.S
 
 func (s *service) GetSettings(jobID uint64) (*assignment.Settings, error) {
 	return s.store.GetSettings(jobID)
+}
+
+func (s *service) DeleteAssignment(workerID uint64, jobID uint64) (bool, error) {
+	return s.store.DeleteAssignment(workerID, jobID)
 }

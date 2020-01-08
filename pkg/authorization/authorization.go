@@ -10,6 +10,7 @@ import (
 type Authorizer interface {
 	SetAuthData(data authentication.AuthData)
 	IsModerator() (bool, error)
+	GetAuthToken() string
 }
 
 type authorizor struct {
@@ -32,4 +33,8 @@ func (a *authorizor) IsModerator() (bool, error) {
 		return false, UnauthorizedAccess{}
 	}
 	return true, nil
+}
+
+func (a *authorizor) GetAuthToken() string {
+	return a.authData.Token
 }

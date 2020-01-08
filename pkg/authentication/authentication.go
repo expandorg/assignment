@@ -21,6 +21,7 @@ type AuthData struct {
 	Expiration int64
 	Issuer     string
 	UserID     uint64
+	Token      string
 }
 
 func ParseAuthData(ctx context.Context) (AuthData, error) {
@@ -37,9 +38,10 @@ func ParseAuthData(ctx context.Context) (AuthData, error) {
 	}
 
 	return AuthData{
-		int64(claims[ExpirationKey].(float64)),
-		claims[IssuerKey].(string),
-		uint64(claims[UserIDKey].(float64)),
+		Expiration: int64(claims[ExpirationKey].(float64)),
+		Issuer:     claims[IssuerKey].(string),
+		UserID:     uint64(claims[UserIDKey].(float64)),
+		Token:      tokenString,
 	}, nil
 }
 

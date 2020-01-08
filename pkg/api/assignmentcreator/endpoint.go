@@ -6,6 +6,7 @@ import (
 	"github.com/gemsorg/assignment/pkg/apierror"
 	"github.com/gemsorg/assignment/pkg/assignment"
 	"github.com/gemsorg/assignment/pkg/authentication"
+	ds "github.com/gemsorg/assignment/pkg/datastore"
 	"github.com/gemsorg/assignment/pkg/service"
 	"github.com/go-kit/kit/endpoint"
 )
@@ -17,7 +18,9 @@ func makeAssignmentCreatorEndpoint(svc service.AssignmentService) endpoint.Endpo
 		req := request.(assignment.NewAssignment)
 		settings, err := svc.GetSettings(req.JobID)
 		if err != nil {
-			return nil, errorResponse(err)
+			if _, ok := err.(ds.NoRowErr); !ok {
+				return nil, errorResponse(err)
+			}
 		}
 
 		saved, err := svc.CreateAssignment(req, settings)

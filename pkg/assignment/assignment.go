@@ -28,7 +28,7 @@ type NewAssignment struct {
 	JobID                  uint64 `json:"job_id"`
 	TaskID                 uint64 `json:"task_id"`
 	WorkerID               uint64 `json:"worker_id"`
-	WorkerAssignmentCount  int    `json:"worker_assignment_count"`
+	WorkerAssignmentCount  int    // This comes internally from this service
 	OnboardingSuccess      bool   `json:"onboarding_success"`
 	WorkerAlreadyResponded bool   `json:"worker_already_responded"`
 	WorkerAlreadyAssigned  bool   // This comes internally from this service

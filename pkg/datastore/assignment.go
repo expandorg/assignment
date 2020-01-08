@@ -79,7 +79,7 @@ func (as *AssignmentStore) GetAssignment(id string) (*assignment.Assignment, err
 
 func (as *AssignmentStore) CreateAssignment(a assignment.NewAssignment) (*assignment.Assignment, error) {
 	result, err := as.DB.Exec(
-		"INSERT INTO assignments (job_id, task_id, worker_id) VALUES (?,?,?)",
+		"INSERT INTO assignments (job_id, task_id, worker_id, expires_at) VALUES (?,?,?, DATE_ADD(CURRENT_TIMESTAMP, INTERVAL 2 HOUR))",
 		a.JobID, a.TaskID, a.WorkerID)
 
 	if err != nil {
@@ -108,14 +108,18 @@ func (as *AssignmentStore) CreateAssignment(a assignment.NewAssignment) (*assign
 }
 
 func (as *AssignmentStore) GetSettings(jobID uint64) (*assignment.Settings, error) {
-	set := &assignment.Settings{}
-	err := as.DB.Get(set, "SELECT * FROM settings WHERE job_id = ?", jobID)
+	set := []*assignment.Settings{}
+	err := as.DB.Select(&set, "SELECT * FROM settings WHERE job_id = ?", jobID)
 
 	if err != nil {
 		return nil, err
 	}
 
-	return set, nil
+	if len(set) == 0 {
+		return nil, NoRowErr{}
+	}
+
+	return set[0], nil
 }
 
 func (as *AssignmentStore) GetWhitelist(jobID uint64, workerID uint64) (*whitelist.Whitelist, error) {

@@ -16,3 +16,9 @@ type AssignmentNotFound struct {
 func (err AssignmentNotFound) Error() string {
 	return fmt.Sprintf("No Record found for worker_id: %d, job_id: %d", err.WorkerID, err.JobID)
 }
+
+type NoRowErr struct{}
+
+func (err NoRowErr) Error() string {
+	return "Query returned no rows"
+}

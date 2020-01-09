@@ -1,4 +1,4 @@
-package assignmentdeactivator
+package assignmentupdater
 
 import (
 	"context"
@@ -9,12 +9,12 @@ import (
 	"github.com/go-kit/kit/endpoint"
 )
 
-func makeAssignmentDeactivatorEndpoint(svc service.AssignmentService) endpoint.Endpoint {
+func makeAssignmentUpdaterEndpoint(svc service.AssignmentService) endpoint.Endpoint {
 	return func(ctx context.Context, request interface{}) (interface{}, error) {
 		data, _ := authentication.ParseAuthData(ctx)
 		svc.SetAuthData(data)
 		req := request.(AssignmentRequest)
-		p, err := svc.DeactivateAssignment(req.WorkerID, req.JobID)
+		p, err := svc.UpdateAssignment(req.WorkerID, req.JobID, req.Status)
 		if err != nil {
 			return AssignmentResponse{p}, errorResponse(err)
 		}
@@ -29,8 +29,9 @@ func errorResponse(err error) *apierror.APIError {
 type AssignmentRequest struct {
 	WorkerID uint64 `json:"worker_id"`
 	JobID    uint64 `json:"job_id"`
+	Status   string `json:"status"`
 }
 
 type AssignmentResponse struct {
-	Deactivated bool `json:"deactivated"`
+	Updated bool `json:"updated"`
 }

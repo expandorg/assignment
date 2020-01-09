@@ -6,6 +6,16 @@ import (
 	"github.com/gemsorg/assignment/pkg/nulls"
 )
 
+type Status string
+
+const (
+	Active   Status = "active"
+	InActive Status = "inactive"
+	Pending  Status = "pending"
+	Accepted Status = "accepted"
+	Rejected Status = "rejected"
+)
+
 type Params struct {
 	WorkerID   string
 	JobID      string
@@ -19,7 +29,7 @@ type Assignment struct {
 	TaskID     uint64      `db:"task_id" json:"task_id"`
 	ResponseID nulls.Int64 `db:"response_id" json:"response_id"`
 	WorkerID   uint64      `db:"worker_id" json:"worker_id"`
-	Active     bool        `db:"active" json:"active"`
+	Status     string      `db:"status" json:"status"`
 	AssignedAt time.Time   `db:"assigned_at" json:"assigned_at"`
 	ExpiresAt  nulls.Time  `db:"expires_at" json:"expires_at"`
 }

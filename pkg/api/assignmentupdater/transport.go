@@ -1,4 +1,4 @@
-package assignmentdeactivator
+package assignmentupdater
 
 import (
 	"context"
@@ -12,8 +12,8 @@ import (
 
 func MakeHandler(s service.AssignmentService) http.Handler {
 	return kithttp.NewServer(
-		makeAssignmentDeactivatorEndpoint(s),
-		decodeAssignmentDeactivatorRequest,
+		makeAssignmentUpdaterEndpoint(s),
+		decodeAssignmentUpdaterRequest,
 		encodeResponse,
 	)
 }
@@ -23,7 +23,7 @@ func encodeResponse(ctx context.Context, w http.ResponseWriter, response interfa
 	return json.NewEncoder(w).Encode(response)
 }
 
-func decodeAssignmentDeactivatorRequest(_ context.Context, r *http.Request) (interface{}, error) {
+func decodeAssignmentUpdaterRequest(_ context.Context, r *http.Request) (interface{}, error) {
 	var a AssignmentRequest
 	decoder := json.NewDecoder(r.Body)
 	err := decoder.Decode(&a)

@@ -4,7 +4,7 @@ CREATE TABLE `assignments` (
   `task_id` int(10) unsigned NOT NULL,
   `response_id` int(10) unsigned DEFAULT NULL,
   `worker_id` int(10) unsigned NOT NULL,
-  `active` tinyint(1) NOT NULL DEFAULT '1',
+  `status` varchar(20) NOT NULL DEFAULT 'active',
   `assigned_at` timestamp NOT NULL DEFAULT CURRENT_TIMESTAMP,
   `expires_at` timestamp NULL DEFAULT NULL,
   PRIMARY KEY (`id`),

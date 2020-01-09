@@ -19,7 +19,7 @@ type Storage interface {
 	GetWhitelist(jobID uint64, workerID uint64) (*whitelist.Whitelist, error)
 	WorkerAlreadyAssigned(jobID uint64, workerID uint64) (bool, error)
 	DeleteAssignment(workerID uint64, jobID uint64) (bool, error)
-	DeactivateAssignment(workerID uint64, jobID uint64) (bool, error)
+	UpdateAssignment(workerID uint64, jobID uint64, status string) (bool, error)
 }
 
 type AssignmentStore struct {
@@ -135,7 +135,7 @@ func (as *AssignmentStore) GetWhitelist(jobID uint64, workerID uint64) (*whiteli
 
 func (as *AssignmentStore) WorkerAlreadyAssigned(jobID uint64, workerID uint64) (bool, error) {
 	a := &assignment.Assignment{}
-	err := as.DB.Get(a, "SELECT * FROM assignments WHERE job_id = ? AND worker_id = ? AND active IS TRUE", jobID, workerID)
+	err := as.DB.Get(a, "SELECT * FROM assignments WHERE job_id = ? AND worker_id = ? AND status = ?", jobID, workerID, assignment.Active)
 
 	if err != nil {
 		return false, err
@@ -159,8 +159,8 @@ func (as *AssignmentStore) DeleteAssignment(workerID uint64, jobID uint64) (bool
 	return true, nil
 }
 
-func (as *AssignmentStore) DeactivateAssignment(workerID uint64, jobID uint64) (bool, error) {
-	result, err := as.DB.Exec("UPDATE assignments SET active = FALSE WHERE worker_id = ? AND job_id = ?", workerID, jobID)
+func (as *AssignmentStore) UpdateAssignment(workerID uint64, jobID uint64, status string) (bool, error) {
+	result, err := as.DB.Exec("UPDATE assignments SET status = ? WHERE worker_id = ? AND job_id = ?", status, workerID, jobID)
 	if err != nil {
 		return false, err
 	}

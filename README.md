@@ -1,6 +1,6 @@
 # Assignment Service
  
-Backend service for job assignments
+Backend service for job/task assignments
 
 ## Getting started 
 

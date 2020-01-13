@@ -2,6 +2,7 @@ package assignmentcreator
 
 import (
 	"context"
+	"fmt"
 
 	"github.com/gemsorg/assignment/pkg/apierror"
 	"github.com/gemsorg/assignment/pkg/assignment"
@@ -10,6 +11,11 @@ import (
 	"github.com/gemsorg/assignment/pkg/service"
 	"github.com/go-kit/kit/endpoint"
 )
+
+type AssignmentCreationResponse struct {
+	Current     *assignment.Assignment
+	Assignments assignment.Assignments
+}
 
 func makeAssignmentCreatorEndpoint(svc service.AssignmentService) endpoint.Endpoint {
 	return func(ctx context.Context, request interface{}) (interface{}, error) {
@@ -23,11 +29,20 @@ func makeAssignmentCreatorEndpoint(svc service.AssignmentService) endpoint.Endpo
 			}
 		}
 
-		saved, err := svc.CreateAssignment(req, settings)
+		current, err := svc.CreateAssignment(req, settings)
 		if err != nil {
 			return nil, errorResponse(err)
 		}
-		return saved, nil
+		params := assignment.Params{
+			WorkerID: fmt.Sprintf("%d", req.WorkerID),
+			Status:   assignment.Active,
+		}
+		assignments, err := svc.GetAssignments(params)
+		if err != nil {
+			return nil, errorResponse(err)
+		}
+
+		return AssignmentCreationResponse{Current: current, Assignments: assignments}, nil
 	}
 }
 

@@ -21,6 +21,7 @@ type Params struct {
 	JobID      string
 	TaskID     string
 	ResponseID string
+	Status     Status
 }
 
 type Assignment struct {

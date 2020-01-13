@@ -49,7 +49,7 @@ func serviceRequest(action, route, authToken string, reqBody io.Reader) ([]byte,
 	if err != nil {
 		return nil, errorResponse(err)
 	}
-	// req.Header.Add("Authorization", authToken)
+
 	req.AddCookie(&http.Cookie{Name: "JWT", Value: authToken})
 
 	r, err := client.Do(req)

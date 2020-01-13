@@ -1,7 +1,6 @@
 package datastore
 
 import (
-	"fmt"
 	"strconv"
 	"strings"
 
@@ -54,10 +53,15 @@ func (as *AssignmentStore) GetAssignments(p assignment.Params) (assignment.Assig
 		paramsQuery = append(paramsQuery, "response_id=?")
 	}
 
+	if p.Status != "" {
+		args = append(args, p.Status)
+		paramsQuery = append(paramsQuery, "status=?")
+	}
+
 	if len(paramsQuery) > 0 {
 		query = query + " Where " + strings.Join(paramsQuery, " AND ")
 	}
-	fmt.Println("Q", query)
+
 	err := as.DB.Select(&assignments, query, args...)
 	if err != nil {
 		return assignments, err

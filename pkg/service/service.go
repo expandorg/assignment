@@ -48,25 +48,24 @@ func (s *service) GetAssignment(id string) (*assignment.Assignment, error) {
 }
 
 func (s *service) CreateAssignment(a assignment.NewAssignment, set *assignment.Settings) (*assignment.Assignment, error) {
-	if set == nil {
-		return s.store.CreateAssignment(a)
-	}
-	// if job has a whitelist, check if worker is part of it
-	if set.Whitelist {
-		wl, err := s.store.GetWhitelist(a.JobID, a.WorkerID)
-		if wl == nil || err != nil {
-			return nil, assignment.WorkerNotWhitelisted{}
+	if set != nil {
+		// if job has a whitelist, check if worker is part of it
+		if set.Whitelist {
+			wl, err := s.store.GetWhitelist(a.JobID, a.WorkerID)
+			if wl == nil || err != nil {
+				return nil, assignment.WorkerNotWhitelisted{}
+			}
 		}
-	}
 
-	// Get worker's assignment for this job
-	assigned, err := s.store.WorkerAlreadyAssigned(a.JobID, a.WorkerID)
-	a.WorkerAlreadyAssigned = assigned
+		// Get worker's assignment for this job
+		assigned, err := s.store.WorkerAlreadyAssigned(a.JobID, a.WorkerID)
+		a.WorkerAlreadyAssigned = assigned
 
-	// Check if the assignment is allowed
-	allowed, err := a.IsAllowed(set)
-	if !allowed {
-		return nil, err
+		// Check if the assignment is allowed
+		allowed, err := a.IsAllowed(set)
+		if !allowed {
+			return nil, err
+		}
 	}
 
 	// Get a task from the task service

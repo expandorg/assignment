@@ -20,5 +20,5 @@ func (err AssignmentNotFound) Error() string {
 type NoRowErr struct{}
 
 func (err NoRowErr) Error() string {
-	return "Query returned no rows"
+	return "No Records"
 }

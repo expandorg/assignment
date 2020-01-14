@@ -7,6 +7,7 @@ import (
 	"github.com/gemsorg/assignment/pkg/api/assignmentdestroyer"
 	"github.com/gemsorg/assignment/pkg/api/assignmentfetcher"
 	"github.com/gemsorg/assignment/pkg/api/assignmentupdater"
+	"github.com/gemsorg/assignment/pkg/api/settingfetcher"
 
 	"github.com/gemsorg/assignment/pkg/authentication"
 
@@ -29,6 +30,7 @@ func New(
 	r.Handle("/assignments", assignmentcreator.MakeHandler(s)).Methods("POST")
 	r.Handle("/assignments", assignmentdestroyer.MakeHandler(s)).Methods("DELETE")
 	r.Handle("/assignments", assignmentupdater.MakeHandler(s)).Methods("PATCH")
+	r.Handle("/settings/{job_id}", settingfetcher.MakeHandler(s)).Methods("GET")
 	r.Use(authentication.AuthMiddleware)
 	return withHandlers(r)
 }

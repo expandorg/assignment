@@ -19,6 +19,7 @@ type Storage interface {
 	WorkerAlreadyAssigned(jobID uint64, workerID uint64) (bool, error)
 	DeleteAssignment(workerID uint64, jobID uint64) (bool, error)
 	UpdateAssignment(workerID uint64, jobID uint64, status string) (bool, error)
+	CreateSettings(assignment.Settings) (*assignment.Settings, error)
 }
 
 type AssignmentStore struct {
@@ -176,4 +177,31 @@ func (as *AssignmentStore) UpdateAssignment(workerID uint64, jobID uint64, statu
 	}
 
 	return true, nil
+}
+
+func (as *AssignmentStore) CreateSettings(s assignment.Settings) (*assignment.Settings, error) {
+	// WE always replace the settings with the incoming
+	_, err := as.DB.Exec(
+		"REPLACE INTO settings (`limit`, `repeat`, singly, whitelist, job_id) VALUES (?, ?, ?, ?, ?)",
+		s.Limit, s.Repeat, s.Singly, s.Whitelist, s.JobID,
+	)
+
+	if err != nil {
+		if err != nil {
+			mysqlerr, ok := err.(*mysql.MySQLError)
+			// duplicate entry job_id
+			if ok && mysqlerr.Number == 1062 {
+				return nil, AlreadyHasSettings{}
+			}
+		}
+		return nil, err
+	}
+
+	set, err := as.GetSettings(s.JobID)
+
+	if err != nil {
+		return nil, err
+	}
+
+	return set, nil
 }

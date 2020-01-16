@@ -8,6 +8,12 @@ func (err AlreadyAssigned) Error() string {
 	return "User is already assigned a task from this job"
 }
 
+type AlreadyHasSettings struct{}
+
+func (err AlreadyHasSettings) Error() string {
+	return "Job already has settings"
+}
+
 type AssignmentNotFound struct {
 	WorkerID uint64
 	JobID    uint64

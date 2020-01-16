@@ -49,11 +49,6 @@ func (as *AssignmentStore) GetAssignments(p assignment.Params) (assignment.Assig
 		args = append(args, p.TaskID)
 		paramsQuery = append(paramsQuery, "task_id=?")
 	}
-	if p.ResponseID != "" {
-		args = append(args, p.ResponseID)
-		paramsQuery = append(paramsQuery, "response_id=?")
-	}
-
 	if p.Status != "" {
 		args = append(args, p.Status)
 		paramsQuery = append(paramsQuery, "status=?")

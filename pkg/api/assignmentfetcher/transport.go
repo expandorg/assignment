@@ -50,6 +50,11 @@ func decodeAssignmentsFetcherRequest(_ context.Context, r *http.Request) (interf
 		as.TaskID = taskID[0]
 	}
 
+	status, ok := params["status"]
+	if ok && len(taskID) > 0 {
+		as.Status = assignment.Status(status[0])
+	}
+
 	return as, nil
 }
 

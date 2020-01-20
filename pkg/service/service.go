@@ -18,6 +18,7 @@ type AssignmentService interface {
 	DeleteAssignment(workerID uint64, jobID uint64) (bool, error)
 	UpdateAssignment(workerID uint64, jobID uint64, status string) (bool, error)
 	CreateSettings(assignment.Settings) (*assignment.Settings, error)
+	GetStore() datastore.Storage
 }
 
 type service struct {
@@ -30,6 +31,10 @@ func New(s datastore.Storage, a authorization.Authorizer) *service {
 		store:      s,
 		authorizor: a,
 	}
+}
+
+func (s *service) GetStore() datastore.Storage {
+	return s.store
 }
 
 func (s *service) Healthy() bool {

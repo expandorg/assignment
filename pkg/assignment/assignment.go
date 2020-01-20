@@ -14,6 +14,7 @@ const (
 	Pending  Status = "pending"
 	Accepted Status = "accepted"
 	Rejected Status = "rejected"
+	Expired  Status = "expired"
 )
 
 type Params struct {

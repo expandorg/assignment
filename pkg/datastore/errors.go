@@ -28,3 +28,9 @@ type NoRowErr struct{}
 func (err NoRowErr) Error() string {
 	return "No Records"
 }
+
+type RecordsMismatch struct{}
+
+func (err RecordsMismatch) Error() string {
+	return "Some records where not processed properly"
+}

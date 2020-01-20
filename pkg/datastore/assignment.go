@@ -18,8 +18,10 @@ type Storage interface {
 	GetWhitelist(jobID uint64, workerID uint64) (*whitelist.Whitelist, error)
 	WorkerAlreadyAssigned(jobID uint64, workerID uint64) (bool, error)
 	DeleteAssignment(workerID uint64, jobID uint64) (bool, error)
+	DeleteAssignments(ids []uint64) error
 	UpdateAssignment(workerID uint64, jobID uint64, status string) (bool, error)
 	CreateSettings(assignment.Settings) (*assignment.Settings, error)
+	SelectExpiredAssignments() (assignment.Assignments, error)
 }
 
 type AssignmentStore struct {
@@ -33,10 +35,16 @@ func NewAssignmentStore(db *sqlx.DB) *AssignmentStore {
 }
 
 func (as *AssignmentStore) GetAssignments(p assignment.Params) (assignment.Assignments, error) {
+	// If we're looking for expired assignments, then return them
+	if p.Status == assignment.Expired {
+		return as.SelectExpiredAssignments()
+	}
+
 	assignments := assignment.Assignments{}
 	query := "SELECT * FROM assignments"
 	paramsQuery := []string{}
 	args := []interface{}{}
+
 	if p.WorkerID != "" {
 		args = append(args, p.WorkerID)
 		paramsQuery = append(paramsQuery, "worker_id=?")
@@ -199,4 +207,35 @@ func (as *AssignmentStore) CreateSettings(s assignment.Settings) (*assignment.Se
 	}
 
 	return set, nil
+}
+
+func (as *AssignmentStore) SelectExpiredAssignments() (assignment.Assignments, error) {
+	assignments := assignment.Assignments{}
+	err := as.DB.Select(
+		&assignments,
+		`SELECT * FROM assignments WHERE expires_at <= NOW()`,
+	)
+	if err != nil {
+		return nil, err
+	}
+	return assignments, nil
+}
+
+func (as *AssignmentStore) DeleteAssignments(ids []uint64) error {
+	query, args, _ := sqlx.In(`DELETE FROM assignments WHERE id IN (?)`, ids)
+	query = as.DB.Rebind(query)
+
+	res, err := as.DB.Exec(query, args...)
+
+	if err != nil {
+		return err
+	}
+
+	numRows, _ := res.RowsAffected()
+
+	if numRows != int64(len(ids)) {
+		return RecordsMismatch{}
+	}
+
+	return nil
 }

@@ -45,15 +45,15 @@ func (as *AssignmentStore) GetAssignments(p assignment.Params) (assignment.Assig
 	paramsQuery := []string{}
 	args := []interface{}{}
 
-	if p.WorkerID != "" {
+	if p.WorkerID != "" && p.WorkerID != "0" {
 		args = append(args, p.WorkerID)
 		paramsQuery = append(paramsQuery, "worker_id=?")
 	}
-	if p.JobID != "" {
+	if p.JobID != "" && p.JobID != "0" {
 		args = append(args, p.JobID)
 		paramsQuery = append(paramsQuery, "job_id=?")
 	}
-	if p.TaskID != "" {
+	if p.TaskID != "" && p.TaskID != "0" {
 		args = append(args, p.TaskID)
 		paramsQuery = append(paramsQuery, "task_id=?")
 	}

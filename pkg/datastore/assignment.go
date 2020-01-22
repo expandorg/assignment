@@ -17,8 +17,8 @@ type Storage interface {
 	GetSettings(jobID uint64) (*assignment.Settings, error)
 	GetWhitelist(jobID uint64, workerID uint64) (*whitelist.Whitelist, error)
 	WorkerAlreadyAssigned(jobID uint64, workerID uint64) (bool, error)
-	DeleteAssignment(workerID uint64, jobID uint64) (bool, error)
-	DeleteAssignments(ids []uint64) error
+	DeleteAssignment(id string) (bool, error)
+	DeleteAssignments(ids []string) error
 	UpdateAssignment(workerID uint64, jobID uint64, status string) (bool, error)
 	CreateSettings(assignment.Settings) (*assignment.Settings, error)
 	SelectExpiredAssignments() (assignment.Assignments, error)
@@ -87,8 +87,8 @@ func (as *AssignmentStore) GetAssignment(id string) (*assignment.Assignment, err
 
 func (as *AssignmentStore) CreateAssignment(a assignment.NewAssignment) (*assignment.Assignment, error) {
 	result, err := as.DB.Exec(
-		"INSERT INTO assignments (job_id, task_id, worker_id, expires_at) VALUES (?,?,?, DATE_ADD(CURRENT_TIMESTAMP, INTERVAL 2 HOUR))",
-		a.JobID, a.TaskID, a.WorkerID)
+		"INSERT INTO assignments (job_id, task_id, worker_id, active, expires_at) VALUES (?,?,?,?,DATE_ADD(CURRENT_TIMESTAMP, INTERVAL 2 HOUR))",
+		a.JobID, a.TaskID, a.WorkerID, 1)
 
 	if err != nil {
 		if err != nil {
@@ -152,8 +152,8 @@ func (as *AssignmentStore) WorkerAlreadyAssigned(jobID uint64, workerID uint64) 
 	return true, nil
 }
 
-func (as *AssignmentStore) DeleteAssignment(workerID uint64, jobID uint64) (bool, error) {
-	result, err := as.DB.Exec("DELETE FROM assignments WHERE worker_id = ? AND job_id = ?", workerID, jobID)
+func (as *AssignmentStore) DeleteAssignment(id string) (bool, error) {
+	result, err := as.DB.Exec("DELETE FROM assignments WHERE id = ?", id)
 	if err != nil {
 		return false, err
 	}
@@ -161,14 +161,14 @@ func (as *AssignmentStore) DeleteAssignment(workerID uint64, jobID uint64) (bool
 	numAffected, err := result.RowsAffected()
 
 	if numAffected == 0 {
-		return false, AssignmentNotFound{workerID, jobID}
+		return false, AssignmentNotFound{ID: id}
 	}
 
 	return true, nil
 }
 
 func (as *AssignmentStore) UpdateAssignment(workerID uint64, jobID uint64, status string) (bool, error) {
-	result, err := as.DB.Exec("UPDATE assignments SET status = ? WHERE worker_id = ? AND job_id = ?", status, workerID, jobID)
+	result, err := as.DB.Exec("UPDATE assignments SET status = ?, active = ? WHERE worker_id = ? AND job_id = ?", status, nil, workerID, jobID)
 	if err != nil {
 		return false, err
 	}
@@ -176,7 +176,7 @@ func (as *AssignmentStore) UpdateAssignment(workerID uint64, jobID uint64, statu
 	numAffected, err := result.RowsAffected()
 
 	if numAffected == 0 {
-		return false, AssignmentNotFound{workerID, jobID}
+		return false, AssignmentNotFound{WorkerID: workerID, JobID: jobID}
 	}
 
 	return true, nil
@@ -221,7 +221,7 @@ func (as *AssignmentStore) SelectExpiredAssignments() (assignment.Assignments, e
 	return assignments, nil
 }
 
-func (as *AssignmentStore) DeleteAssignments(ids []uint64) error {
+func (as *AssignmentStore) DeleteAssignments(ids []string) error {
 	query, args, _ := sqlx.In(`DELETE FROM assignments WHERE id IN (?)`, ids)
 	query = as.DB.Rebind(query)
 

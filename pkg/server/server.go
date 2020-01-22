@@ -29,7 +29,7 @@ func New(
 	r.Handle("/assignments", assignmentfetcher.MakeAssignmentsFetcherHandler(s)).Methods("GET")
 	r.Handle("/assignments/{assignment_id}", assignmentfetcher.MakeAssignmentFetcherHandler(s)).Methods("GET")
 	r.Handle("/assignments", assignmentcreator.MakeHandler(s)).Methods("POST")
-	r.Handle("/assignments", assignmentdestroyer.MakeHandler(s)).Methods("DELETE")
+	r.Handle("/assignments/{assignment_id}", assignmentdestroyer.MakeHandler(s)).Methods("DELETE")
 	r.Handle("/assignments", assignmentupdater.MakeHandler(s)).Methods("PATCH")
 	r.Handle("/settings/{job_id}", settingfetcher.MakeHandler(s)).Methods("GET")
 	r.Handle("/settings", settingcreator.MakeHandler(s)).Methods("PUT")

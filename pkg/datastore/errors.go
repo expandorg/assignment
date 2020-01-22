@@ -15,6 +15,7 @@ func (err AlreadyHasSettings) Error() string {
 }
 
 type AssignmentNotFound struct {
+	ID       string
 	WorkerID uint64
 	JobID    uint64
 }

@@ -3,11 +3,12 @@ package assignmentdestroyer
 import (
 	"context"
 	"encoding/json"
+	"fmt"
 	"net/http"
 
-	"github.com/gemsorg/assignment/pkg/apierror"
 	"github.com/gemsorg/assignment/pkg/service"
 	kithttp "github.com/go-kit/kit/transport/http"
+	"github.com/gorilla/mux"
 )
 
 func MakeHandler(s service.AssignmentService) http.Handler {
@@ -24,11 +25,11 @@ func encodeResponse(ctx context.Context, w http.ResponseWriter, response interfa
 }
 
 func decodeAssignmentDestroyerRequest(_ context.Context, r *http.Request) (interface{}, error) {
-	var a AssignmentRequest
-	decoder := json.NewDecoder(r.Body)
-	err := decoder.Decode(&a)
-	if err != nil {
-		return nil, apierror.New(500, err.Error(), err)
+	vars := mux.Vars(r)
+	var ok bool
+	assignmentID, ok := vars["assignment_id"]
+	if !ok {
+		return nil, fmt.Errorf("missing assignment_id parameter")
 	}
-	return a, nil
+	return AssignmentRequest{AssignmentID: assignmentID}, nil
 }

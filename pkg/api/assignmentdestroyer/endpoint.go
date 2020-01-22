@@ -14,7 +14,7 @@ func makeAssignmentDestroyerEndpoint(svc service.AssignmentService) endpoint.End
 		data, _ := authentication.ParseAuthData(ctx)
 		svc.SetAuthData(data)
 		req := request.(AssignmentRequest)
-		p, err := svc.DeleteAssignment(req.WorkerID, req.JobID)
+		p, err := svc.DeleteAssignment(req.AssignmentID)
 		if err != nil {
 			return AssignmentResponse{p}, errorResponse(err)
 		}
@@ -27,8 +27,7 @@ func errorResponse(err error) *apierror.APIError {
 }
 
 type AssignmentRequest struct {
-	WorkerID uint64 `json:"worker_id"`
-	JobID    uint64 `json:"job_id"`
+	AssignmentID string `json:"assignment_id"`
 }
 
 type AssignmentResponse struct {

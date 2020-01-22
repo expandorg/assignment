@@ -14,7 +14,7 @@ func makeAssignmentUpdaterEndpoint(svc service.AssignmentService) endpoint.Endpo
 		data, _ := authentication.ParseAuthData(ctx)
 		svc.SetAuthData(data)
 		req := request.(AssignmentRequest)
-		p, err := svc.UpdateAssignment(req.WorkerID, req.JobID, req.Status)
+		p, err := svc.UpdateAssignment(req.WorkerID, req.JobID, req.ResponseID, req.Status)
 		if err != nil {
 			return AssignmentResponse{p}, errorResponse(err)
 		}
@@ -27,9 +27,10 @@ func errorResponse(err error) *apierror.APIError {
 }
 
 type AssignmentRequest struct {
-	WorkerID uint64 `json:"worker_id"`
-	JobID    uint64 `json:"job_id"`
-	Status   string `json:"status"`
+	WorkerID   uint64 `json:"worker_id"`
+	JobID      uint64 `json:"job_id"`
+	ResponseID uint64 `json:"response_id"`
+	Status     string `json:"status"`
 }
 
 type AssignmentResponse struct {

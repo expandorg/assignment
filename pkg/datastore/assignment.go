@@ -19,7 +19,7 @@ type Storage interface {
 	WorkerAlreadyAssigned(jobID uint64, workerID uint64) (bool, error)
 	DeleteAssignment(id string) (bool, error)
 	DeleteAssignments(ids []string) error
-	UpdateAssignment(workerID uint64, jobID uint64, status string) (bool, error)
+	UpdateAssignment(workerID, jobID, responseID uint64, status string) (bool, error)
 	CreateSettings(assignment.Settings) (*assignment.Settings, error)
 	SelectExpiredAssignments() (assignment.Assignments, error)
 }
@@ -56,6 +56,10 @@ func (as *AssignmentStore) GetAssignments(p assignment.Params) (assignment.Assig
 	if p.TaskID != "" && p.TaskID != "0" {
 		args = append(args, p.TaskID)
 		paramsQuery = append(paramsQuery, "task_id=?")
+	}
+	if p.ResponseID != "" && p.ResponseID != "0" {
+		args = append(args, p.ResponseID)
+		paramsQuery = append(paramsQuery, "response_id=?")
 	}
 	if p.Status != "" {
 		args = append(args, p.Status)
@@ -167,16 +171,32 @@ func (as *AssignmentStore) DeleteAssignment(id string) (bool, error) {
 	return true, nil
 }
 
-func (as *AssignmentStore) UpdateAssignment(workerID uint64, jobID uint64, status string) (bool, error) {
-	result, err := as.DB.Exec("UPDATE assignments SET status = ?, active = ? WHERE worker_id = ? AND job_id = ?", status, nil, workerID, jobID)
-	if err != nil {
-		return false, err
+func (as *AssignmentStore) UpdateAssignment(workerID, jobID, responseID uint64, status string) (bool, error) {
+	// we're making it pending from active
+	var numAffected int64
+	if assignment.Status(status) == assignment.Pending {
+		result, err := as.DB.Exec(
+			"UPDATE assignments SET status = ?, active = ?, response_id = ? WHERE worker_id = ? AND job_id = ? AND active IS TRUE",
+			status, nil, responseID, workerID, jobID,
+		)
+		if err != nil {
+			return false, err
+		}
+		numAffected, err = result.RowsAffected()
+	} else {
+		// we're scoring
+		result, err := as.DB.Exec(
+			"UPDATE assignments SET status = ? WHERE worker_id = ? AND job_id = ? AND response_id = ? AND active IS NULL",
+			status, workerID, jobID, responseID,
+		)
+		if err != nil {
+			return false, err
+		}
+		numAffected, err = result.RowsAffected()
 	}
 
-	numAffected, err := result.RowsAffected()
-
 	if numAffected == 0 {
-		return false, AssignmentNotFound{WorkerID: workerID, JobID: jobID}
+		return false, AssignmentNotFound{WorkerID: workerID, JobID: jobID, ResponseID: responseID}
 	}
 
 	return true, nil
@@ -213,7 +233,7 @@ func (as *AssignmentStore) SelectExpiredAssignments() (assignment.Assignments, e
 	assignments := assignment.Assignments{}
 	err := as.DB.Select(
 		&assignments,
-		`SELECT * FROM assignments WHERE expires_at <= NOW()`,
+		`SELECT * FROM assignments WHERE active IS TRUE AND expires_at <= NOW()`,
 	)
 	if err != nil {
 		return nil, err

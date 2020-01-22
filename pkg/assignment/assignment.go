@@ -18,20 +18,23 @@ const (
 )
 
 type Params struct {
-	WorkerID string
-	JobID    string
-	TaskID   string
-	Status   Status
+	WorkerID   string
+	JobID      string
+	TaskID     string
+	ResponseID string
+	Status     Status
 }
 
 type Assignment struct {
-	ID         uint64     `db:"id" json:"id"`
-	JobID      uint64     `db:"job_id" json:"job_id"`
-	TaskID     uint64     `db:"task_id" json:"task_id"`
-	WorkerID   uint64     `db:"worker_id" json:"worker_id"`
-	Status     string     `db:"status" json:"status"`
-	AssignedAt time.Time  `db:"assigned_at" json:"assigned_at"`
-	ExpiresAt  nulls.Time `db:"expires_at" json:"expires_at"`
+	ID         uint64      `db:"id" json:"id"`
+	JobID      uint64      `db:"job_id" json:"job_id"`
+	TaskID     uint64      `db:"task_id" json:"task_id"`
+	WorkerID   uint64      `db:"worker_id" json:"worker_id"`
+	ResponseID nulls.Int64 `db:"response_id" json:"response_id"`
+	Status     string      `db:"status" json:"status"`
+	Active     nulls.Bool  `db:"active" json:"active"`
+	AssignedAt time.Time   `db:"assigned_at" json:"assigned_at"`
+	ExpiresAt  nulls.Time  `db:"expires_at" json:"expires_at"`
 }
 
 type NewAssignment struct {

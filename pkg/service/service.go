@@ -17,7 +17,7 @@ type AssignmentService interface {
 	GetSettings(jobID uint64) (*assignment.Settings, error)
 	DeleteAssignment(id string) (bool, error)
 	DeleteAssignments(ids []string) error
-	UpdateAssignment(workerID uint64, jobID uint64, status string) (bool, error)
+	UpdateAssignment(workerID, jobID, responseID uint64, status string) (bool, error)
 	CreateSettings(assignment.Settings) (*assignment.Settings, error)
 	GetStore() datastore.Storage
 }
@@ -101,8 +101,8 @@ func (s *service) DeleteAssignments(ids []string) error {
 	return s.store.DeleteAssignments(ids)
 }
 
-func (s *service) UpdateAssignment(workerID uint64, jobID uint64, status string) (bool, error) {
-	return s.store.UpdateAssignment(workerID, jobID, status)
+func (s *service) UpdateAssignment(workerID, jobID, responseID uint64, status string) (bool, error) {
+	return s.store.UpdateAssignment(workerID, jobID, responseID, status)
 }
 
 func (s *service) CreateSettings(set assignment.Settings) (*assignment.Settings, error) {

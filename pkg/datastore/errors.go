@@ -15,13 +15,14 @@ func (err AlreadyHasSettings) Error() string {
 }
 
 type AssignmentNotFound struct {
-	ID       string
-	WorkerID uint64
-	JobID    uint64
+	ID         string
+	WorkerID   uint64
+	JobID      uint64
+	ResponseID uint64
 }
 
 func (err AssignmentNotFound) Error() string {
-	return fmt.Sprintf("No Record found for worker_id: %d, job_id: %d", err.WorkerID, err.JobID)
+	return fmt.Sprintf("No Record found for id: %s, worker_id: %d, job_id: %d, response_id: %d", err.ID, err.WorkerID, err.JobID, err.ResponseID)
 }
 
 type NoRowErr struct{}

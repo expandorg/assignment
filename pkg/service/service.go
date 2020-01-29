@@ -20,6 +20,7 @@ type AssignmentService interface {
 	UpdateAssignment(workerID, jobID, responseID uint64, status string) (bool, error)
 	CreateSettings(assignment.Settings) (*assignment.Settings, error)
 	GetStore() datastore.Storage
+	ValidateAssignment(a assignment.NewAssignment, set *assignment.Settings) (bool, error)
 }
 
 type service struct {
@@ -107,4 +108,31 @@ func (s *service) UpdateAssignment(workerID, jobID, responseID uint64, status st
 
 func (s *service) CreateSettings(set assignment.Settings) (*assignment.Settings, error) {
 	return s.store.CreateSettings(set)
+}
+
+func (s *service) ValidateAssignment(a assignment.NewAssignment, set *assignment.Settings) (bool, error) {
+	allowed := true
+	if set == nil {
+		return allowed, nil
+	}
+
+	// if job has a whitelist, check if worker is part of it
+	if set.Whitelist {
+		wl, err := s.store.GetWhitelist(a.JobID, a.WorkerID)
+		if wl == nil || err != nil {
+			return false, assignment.WorkerNotWhitelisted{}
+		}
+	}
+
+	// Get worker's assignment for this job
+	assigned, err := s.store.WorkerAlreadyAssigned(a.JobID, a.WorkerID)
+	a.WorkerAlreadyAssigned = assigned
+
+	// Check if the assignment is allowed
+	allowed, err = a.IsAllowed(set)
+	if !allowed {
+		return false, err
+	}
+
+	return allowed, nil
 }

@@ -59,6 +59,21 @@ func (s *service) GetAssignment(id string) (*assignment.Assignment, error) {
 }
 
 func (s *service) CreateAssignment(a assignment.NewAssignment, set *assignment.Settings) (*assignment.Assignment, error) {
+	// Get worker's assignment for this job
+	assigned, err := s.store.WorkerAlreadyAssigned(a.JobID, a.WorkerID)
+	a.WorkerAlreadyAssigned = assigned
+
+	// Check if there's an external service registered for this task
+	r, err := s.GetRegistration(a.JobID)
+	if r != nil && r.Services[registrysvc.AssignmentCreator] != nil {
+		res, err := externalsvc.Assign(*r, a, s.authorizor.GetAuthToken())
+		if res == nil || err != nil {
+			return nil, NoAvailableTasks{}
+		}
+		a.TaskID = res.TaskID
+		return s.store.CreateAssignment(a)
+	}
+
 	if set != nil {
 		// if job has a whitelist, check if worker is part of it
 		if set.Whitelist {
@@ -67,10 +82,6 @@ func (s *service) CreateAssignment(a assignment.NewAssignment, set *assignment.S
 				return nil, assignment.WorkerNotWhitelisted{}
 			}
 		}
-
-		// Get worker's assignment for this job
-		assigned, err := s.store.WorkerAlreadyAssigned(a.JobID, a.WorkerID)
-		a.WorkerAlreadyAssigned = assigned
 
 		// Check if the assignment is allowed
 		allowed, err := a.IsAllowed(set)

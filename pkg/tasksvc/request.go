@@ -2,6 +2,7 @@ package tasksvc
 
 import (
 	"encoding/json"
+	"errors"
 	"fmt"
 	"io"
 	"io/ioutil"
@@ -41,6 +42,17 @@ func Search(jobID uint64, authToken string, params SearchParams) (SearchResult, 
 	return r, nil
 }
 
+func ValidateTask(taskID uint64, authToken string) error {
+	route := fmt.Sprintf("tasks/%d", taskID)
+
+	_, err := serviceRequest("GET", route, authToken, nil)
+	if err != nil {
+		return err
+	}
+
+	return nil
+}
+
 func serviceRequest(action, route, authToken string, reqBody io.Reader) ([]byte, error) {
 	client := &http.Client{}
 	serviceURL := fmt.Sprintf("%s/%s", os.Getenv("TASK_SVC_URL"), route)
@@ -55,6 +67,10 @@ func serviceRequest(action, route, authToken string, reqBody io.Reader) ([]byte,
 	r, err := client.Do(req)
 	if err != nil {
 		return nil, errorResponse(err)
+	}
+
+	if r.StatusCode != 200 {
+		return nil, errors.New("bad request")
 	}
 
 	body, err := ioutil.ReadAll(r.Body)

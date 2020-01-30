@@ -5,6 +5,8 @@ import (
 	"github.com/gemsorg/assignment/pkg/authentication"
 	"github.com/gemsorg/assignment/pkg/authorization"
 	"github.com/gemsorg/assignment/pkg/datastore"
+	"github.com/gemsorg/assignment/pkg/externalsvc"
+	"github.com/gemsorg/assignment/pkg/registrysvc"
 	"github.com/gemsorg/assignment/pkg/tasksvc"
 )
 
@@ -21,6 +23,7 @@ type AssignmentService interface {
 	CreateSettings(assignment.Settings) (*assignment.Settings, error)
 	GetStore() datastore.Storage
 	ValidateAssignment(a assignment.NewAssignment, set *assignment.Settings) (bool, error)
+	GetRegistration(jobID uint64) (*registrysvc.Registration, error)
 }
 
 type service struct {
@@ -128,11 +131,22 @@ func (s *service) ValidateAssignment(a assignment.NewAssignment, set *assignment
 	assigned, err := s.store.WorkerAlreadyAssigned(a.JobID, a.WorkerID)
 	a.WorkerAlreadyAssigned = assigned
 
+	// Check if there's an external service registered for this task
+	r, err := s.GetRegistration(a.JobID)
+	if r != nil && r.Services[registrysvc.AssignmentValidator] != nil {
+		return externalsvc.Validate(*r, a)
+	} else {
+		allowed, err = a.IsAllowed(set)
+	}
+
 	// Check if the assignment is allowed
-	allowed, err = a.IsAllowed(set)
 	if !allowed {
 		return false, err
 	}
 
 	return allowed, nil
+}
+
+func (s *service) GetRegistration(jobID uint64) (*registrysvc.Registration, error) {
+	return registrysvc.GetRegistration(s.authorizor.GetAuthToken(), jobID)
 }

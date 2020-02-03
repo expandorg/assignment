@@ -1,6 +1,8 @@
 package service
 
 import (
+	"fmt"
+
 	"github.com/gemsorg/assignment/pkg/assignment"
 	"github.com/gemsorg/assignment/pkg/authentication"
 	"github.com/gemsorg/assignment/pkg/authorization"
@@ -59,9 +61,15 @@ func (s *service) GetAssignment(id string) (*assignment.Assignment, error) {
 }
 
 func (s *service) CreateAssignment(a assignment.NewAssignment, set *assignment.Settings) (*assignment.Assignment, error) {
-	// Get worker's assignment for this job
-	assigned, err := s.store.WorkerAlreadyAssigned(a.JobID, a.WorkerID)
-	a.WorkerAlreadyAssigned = assigned
+	// Set worker's assignment count and check if they have an active assignment
+	assignments, err := s.GetAssignments(assignment.Params{
+		WorkerID: fmt.Sprintf("%d", a.WorkerID),
+		JobID:    fmt.Sprintf("%d", a.JobID),
+	})
+	for _, as := range assignments {
+		a.WorkerAlreadyAssigned = as.Status == string(assignment.Active)
+	}
+	a.WorkerAssignmentCount = len(assignments)
 
 	// Check if there's an external service registered for this task
 	r, err := s.GetRegistration(a.JobID)
@@ -138,9 +146,15 @@ func (s *service) ValidateAssignment(a assignment.NewAssignment, set *assignment
 		}
 	}
 
-	// Get worker's assignment for this job
-	assigned, err := s.store.WorkerAlreadyAssigned(a.JobID, a.WorkerID)
-	a.WorkerAlreadyAssigned = assigned
+	// Set worker's assignment count and check if they have an active assignment
+	assignments, err := s.GetAssignments(assignment.Params{
+		WorkerID: fmt.Sprintf("%d", a.WorkerID),
+		JobID:    fmt.Sprintf("%d", a.JobID),
+	})
+	for _, as := range assignments {
+		a.WorkerAlreadyAssigned = as.Status == string(assignment.Active)
+	}
+	a.WorkerAssignmentCount = len(assignments)
 
 	// Check if there's an external service registered for this task
 	r, err := s.GetRegistration(a.JobID)

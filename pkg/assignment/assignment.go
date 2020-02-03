@@ -56,7 +56,7 @@ func (a NewAssignment) IsAllowed(set *Settings) (bool, error) {
 	}
 
 	// We reached the limit of the total assignment for the job and worker
-	if set.Limit != 0 && set.Limit == a.WorkerAssignmentCount {
+	if set.Limit != 0 && a.WorkerAssignmentCount >= set.Limit {
 		return false, JobLimitReached{}
 	}
 

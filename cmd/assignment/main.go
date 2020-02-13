@@ -6,13 +6,13 @@ import (
 	"log"
 	"net/http"
 
-	"github.com/gemsorg/assignment/pkg/authorization"
-	"github.com/gemsorg/assignment/pkg/database"
-	"github.com/gemsorg/assignment/pkg/datastore"
-	"github.com/gemsorg/assignment/pkg/service"
+	"github.com/expandorg/assignment/pkg/authorization"
+	"github.com/expandorg/assignment/pkg/database"
+	"github.com/expandorg/assignment/pkg/datastore"
+	"github.com/expandorg/assignment/pkg/service"
 	"github.com/joho/godotenv"
 
-	"github.com/gemsorg/assignment/pkg/server"
+	"github.com/expandorg/assignment/pkg/server"
 )
 
 func main() {

@@ -13,11 +13,11 @@ Backend service for job/task assignments
 
 Clone the repository with: 
 
-`go get -u github.com/gemsorg/assignment`
+`go get -u github.com/expandorg/assignment`
 
 OR 
 
-create a directory `$GOPATH/src/github/gemsorg` and execute: git clone git@github.com:gemsorg/assignment.git 
+create a directory `$GOPATH/src/github/expandorg` and execute: git clone git@github.com:expandorg/assignment.git 
 
 Run the project dependencies (db, etc.) with `make up`
 

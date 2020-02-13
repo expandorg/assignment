@@ -6,8 +6,8 @@ import (
 	"fmt"
 	"net/http"
 
-	"github.com/gemsorg/assignment/pkg/assignment"
-	"github.com/gemsorg/assignment/pkg/service"
+	"github.com/expandorg/assignment/pkg/assignment"
+	"github.com/expandorg/assignment/pkg/service"
 	kithttp "github.com/go-kit/kit/transport/http"
 	"github.com/gorilla/mux"
 )

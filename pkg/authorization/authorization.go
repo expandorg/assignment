@@ -4,7 +4,7 @@ import (
 	"os"
 	"strconv"
 
-	"github.com/gemsorg/assignment/pkg/authentication"
+	"github.com/expandorg/assignment/pkg/authentication"
 )
 
 type Authorizer interface {

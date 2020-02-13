@@ -9,7 +9,7 @@ import (
 	"net/http"
 	"os"
 
-	"github.com/gemsorg/assignment/pkg/apierror"
+	"github.com/expandorg/assignment/pkg/apierror"
 )
 
 type SearchParams struct {

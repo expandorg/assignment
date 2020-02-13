@@ -3,20 +3,20 @@ package server
 import (
 	"net/http"
 
-	"github.com/gemsorg/assignment/pkg/api/assignmentcreator"
-	"github.com/gemsorg/assignment/pkg/api/assignmentdestroyer"
-	"github.com/gemsorg/assignment/pkg/api/assignmentfetcher"
-	"github.com/gemsorg/assignment/pkg/api/assignmentupdater"
-	"github.com/gemsorg/assignment/pkg/api/assignmentvalidator"
-	"github.com/gemsorg/assignment/pkg/api/settingcreator"
-	"github.com/gemsorg/assignment/pkg/api/settingfetcher"
+	"github.com/expandorg/assignment/pkg/api/assignmentcreator"
+	"github.com/expandorg/assignment/pkg/api/assignmentdestroyer"
+	"github.com/expandorg/assignment/pkg/api/assignmentfetcher"
+	"github.com/expandorg/assignment/pkg/api/assignmentupdater"
+	"github.com/expandorg/assignment/pkg/api/assignmentvalidator"
+	"github.com/expandorg/assignment/pkg/api/settingcreator"
+	"github.com/expandorg/assignment/pkg/api/settingfetcher"
 
-	"github.com/gemsorg/assignment/pkg/authentication"
+	"github.com/expandorg/assignment/pkg/authentication"
 
 	"github.com/jmoiron/sqlx"
 
-	"github.com/gemsorg/assignment/pkg/api/healthchecker"
-	"github.com/gemsorg/assignment/pkg/service"
+	"github.com/expandorg/assignment/pkg/api/healthchecker"
+	"github.com/expandorg/assignment/pkg/service"
 	"github.com/gorilla/mux"
 )
 

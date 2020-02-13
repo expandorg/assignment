@@ -6,7 +6,7 @@ import (
 	"os"
 	"testing"
 
-	"github.com/gemsorg/assignment/pkg/mock"
+	"github.com/expandorg/assignment/pkg/mock"
 )
 
 func TestAuthorizationHeaderIsInsertedInContextWithBearer(t *testing.T) {

@@ -3,9 +3,9 @@ package assignmentupdater
 import (
 	"context"
 
-	"github.com/gemsorg/assignment/pkg/apierror"
-	"github.com/gemsorg/assignment/pkg/authentication"
-	"github.com/gemsorg/assignment/pkg/service"
+	"github.com/expandorg/assignment/pkg/apierror"
+	"github.com/expandorg/assignment/pkg/authentication"
+	"github.com/expandorg/assignment/pkg/service"
 	"github.com/go-kit/kit/endpoint"
 )
 

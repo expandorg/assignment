@@ -3,13 +3,13 @@ package service
 import (
 	"fmt"
 
-	"github.com/gemsorg/assignment/pkg/assignment"
-	"github.com/gemsorg/assignment/pkg/authentication"
-	"github.com/gemsorg/assignment/pkg/authorization"
-	"github.com/gemsorg/assignment/pkg/datastore"
-	"github.com/gemsorg/assignment/pkg/externalsvc"
-	"github.com/gemsorg/assignment/pkg/registrysvc"
-	"github.com/gemsorg/assignment/pkg/tasksvc"
+	"github.com/expandorg/assignment/pkg/assignment"
+	"github.com/expandorg/assignment/pkg/authentication"
+	"github.com/expandorg/assignment/pkg/authorization"
+	"github.com/expandorg/assignment/pkg/datastore"
+	"github.com/expandorg/assignment/pkg/externalsvc"
+	"github.com/expandorg/assignment/pkg/registrysvc"
+	"github.com/expandorg/assignment/pkg/tasksvc"
 )
 
 type AssignmentService interface {

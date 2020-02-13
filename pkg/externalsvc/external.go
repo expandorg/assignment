@@ -7,9 +7,9 @@ import (
 	"io/ioutil"
 	"net/http"
 
-	"github.com/gemsorg/assignment/pkg/assignment"
-	"github.com/gemsorg/assignment/pkg/registrysvc"
-	"github.com/gemsorg/assignment/pkg/tasksvc"
+	"github.com/expandorg/assignment/pkg/assignment"
+	"github.com/expandorg/assignment/pkg/registrysvc"
+	"github.com/expandorg/assignment/pkg/tasksvc"
 )
 
 type ValidationResponse struct {

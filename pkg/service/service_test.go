@@ -3,8 +3,8 @@ package service
 import (
 	"testing"
 
-	"github.com/gemsorg/assignment/pkg/authorization"
-	"github.com/gemsorg/assignment/pkg/datastore"
+	"github.com/expandorg/assignment/pkg/authorization"
+	"github.com/expandorg/assignment/pkg/datastore"
 	"github.com/stretchr/testify/assert"
 )
 

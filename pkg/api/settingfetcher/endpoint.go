@@ -5,10 +5,10 @@ import (
 	"encoding/json"
 	"strconv"
 
-	"github.com/gemsorg/assignment/pkg/apierror"
-	"github.com/gemsorg/assignment/pkg/authentication"
-	ds "github.com/gemsorg/assignment/pkg/datastore"
-	"github.com/gemsorg/assignment/pkg/service"
+	"github.com/expandorg/assignment/pkg/apierror"
+	"github.com/expandorg/assignment/pkg/authentication"
+	ds "github.com/expandorg/assignment/pkg/datastore"
+	"github.com/expandorg/assignment/pkg/service"
 	"github.com/go-kit/kit/endpoint"
 )
 

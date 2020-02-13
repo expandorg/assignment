@@ -3,7 +3,7 @@ package assignment
 import (
 	"time"
 
-	"github.com/gemsorg/assignment/pkg/nulls"
+	"github.com/expandorg/assignment/pkg/nulls"
 )
 
 type Status string

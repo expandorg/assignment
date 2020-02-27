@@ -84,12 +84,12 @@ build-migrations:
 run-migrations: build-migrations
 	docker run --network host assignment-migration \
 	$(action) $(version) \
-	"mysql://$(ASSIGNMENT_DB_USER):$(ASSIGNMENT_DB_PASSWORD)@tcp($(ASSIGNMENT_DB_HOST):$(ASSIGNMENT_DB_PORT))/$(ASSIGNMENT_DB_NAME)"
+	"mysql://$(ASSIGNMENT_DB_USER):$(ASSIGNMENT_DB_PASSWORD)@tcp($(ASSIGNMENT_DB_HOST):$(ASSIGNMENT_DB_PORT))/$(ASSIGNMENT_DB)"
 
 migrate-latest: build-migrations
 	docker run --network host assignment-migration \
 	goto $(LAST_MIGRATION) \
-	"mysql://$(ASSIGNMENT_DB_USER):$(ASSIGNMENT_DB_PASSWORD)@tcp($(ASSIGNMENT_DB_HOST):$(ASSIGNMENT_DB_PORT))/$(ASSIGNMENT_DB_NAME)"
+	"mysql://$(ASSIGNMENT_DB_USER):$(ASSIGNMENT_DB_PASSWORD)@tcp($(ASSIGNMENT_DB_HOST):$(ASSIGNMENT_DB_PORT))/$(ASSIGNMENT_DB)"
 
 db-seed:
 	@echo "Seeding db"

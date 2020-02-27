@@ -1,0 +1,127 @@
+# BE CAREFUL MODIFYING THIS FILE
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: APP
+spec:
+  selector:
+    matchLabels:
+      app: APP
+  replicas: 3
+  template:
+    metadata:
+      labels:
+        app: APP
+    spec:
+      containers:
+      - name: APP
+        image: gcr.io/ORG/NAME:VERSION
+        command: ["./assignment"]
+        args: ["--env=ENV"]
+        env:
+        - name: ASSIGNMENT_DB_HOST
+          valueFrom:
+            configMapKeyRef:
+              name: DATA
+              key: ASSIGNMENT_DB_HOST
+        - name: ASSIGNMENT_DB_PORT
+          valueFrom:
+            configMapKeyRef:
+              name: DATA
+              key: ASSIGNMENT_DB_PORT
+        - name: ASSIGNMENT_DB
+          valueFrom:
+            configMapKeyRef:
+              name: DATA
+              key: ASSIGNMENT_DB
+        - name: ASSIGNMENT_DB_USER
+          valueFrom:
+            configMapKeyRef:
+              name: DATA
+              key: ASSIGNMENT_DB_USER
+        - name: ASSIGNMENT_DB_PASSWORD
+          valueFrom:
+            configMapKeyRef:
+              name: DATA
+              key: ASSIGNMENT_DB_PASSWORD
+        - name: JWT_SECRET
+          valueFrom:
+            configMapKeyRef:
+              name: DATA
+              key: JWT_SECRET
+        - name: TASK_SVC_URL
+          valueFrom:
+            configMapKeyRef:
+              name: assignment-data
+              key: TASK_SVC_URL
+        ports: 
+        - containerPort: 8184
+        resources: {}
+      
+---
+apiVersion: batch/v1
+kind: Job
+metadata:
+  name: MIGRATION
+spec:
+  ttlSecondsAfterFinished: 100
+  template:
+    metadata:
+      labels:
+        app: MIGRATION
+    spec:
+      containers:
+      - name: MIGRATION
+        image: gcr.io/ORG/NAME-migration:VERSION
+        args: ["composeup"]
+        env:
+        - name: ASSIGNMENT_DB_HOST
+          valueFrom:
+            configMapKeyRef:
+              name: DATA
+              key: ASSIGNMENT_DB_HOST
+        - name: ASSIGNMENT_DB_PORT
+          valueFrom:
+            configMapKeyRef:
+              name: DATA
+              key: ASSIGNMENT_DB_PORT
+        - name: ASSIGNMENT_DB
+          valueFrom:
+            configMapKeyRef:
+              name: DATA
+              key: ASSIGNMENT_DB
+        - name: ASSIGNMENT_DB_USER
+          valueFrom:
+            configMapKeyRef:
+              name: DATA
+              key: ASSIGNMENT_DB_USER
+        - name: ASSIGNMENT_DB_PASSWORD
+          valueFrom:
+            configMapKeyRef:
+              name: DATA
+              key: ASSIGNMENT_DB_PASSWORD
+        - name: JWT_SECRET
+          valueFrom:
+            configMapKeyRef:
+              name: DATA
+              key: JWT_SECRET
+        - name: TASK_SVC_URL
+          valueFrom:
+            configMapKeyRef:
+              name: assignment-data
+              key: TASK_SVC_URL
+      restartPolicy: Never
+  backoffLimit: 4
+---
+
+apiVersion: v1
+kind: Service
+metadata:
+  name: APP
+spec:
+  selector:
+    app: APP
+  ports:
+  - port: 80
+    targetPort: 8184
+  type: LoadBalancer

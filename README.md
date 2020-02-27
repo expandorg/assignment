@@ -83,3 +83,13 @@ We keep all unit tests close to the code and withing the same package. For examp
 ### Functional
 
 We keep all functional tests in `tests/` folder. Create a new test file for every function. 
+
+## How to Contribute
+
+If you're interested in contributing to the assignment service:
+
+ * Start by reading the [Contributing guide](CONTRIBUTING.md).
+
+## License
+
+Assignment service is licensed under the [MPL-2](license) license

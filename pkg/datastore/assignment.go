@@ -91,7 +91,7 @@ func (as *AssignmentStore) GetAssignment(id string) (*assignment.Assignment, err
 
 func (as *AssignmentStore) CreateAssignment(a assignment.NewAssignment) (*assignment.Assignment, error) {
 	result, err := as.DB.Exec(
-		"INSERT INTO assignments (job_id, task_id, worker_id, active, expires_at) VALUES (?,?,?,?,DATE_ADD(CURRENT_TIMESTAMP, INTERVAL 2 HOUR))",
+		"INSERT INTO assignments (job_id, task_id, worker_id, active, expires_at) VALUES (?,?,?,?,DATE_ADD(CURRENT_TIMESTAMP, INTERVAL 4 HOUR))",
 		a.JobID, a.TaskID, a.WorkerID, 1)
 
 	if err != nil {

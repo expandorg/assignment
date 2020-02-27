@@ -1,6 +1,6 @@
 # Assignment Service
  
-Backend service for job/task assignments
+Backend service for job/task assignments. [API documentation](https://documenter.getpostman.com/view/7517177/SzKYPwnE)
 
 ## Getting started 
 

@@ -52,7 +52,7 @@ spec:
         - name: TASK_SVC_URL
           valueFrom:
             configMapKeyRef:
-              name: assignment-data
+              name: DATA
               key: TASK_SVC_URL
         ports: 
         - containerPort: 8182
@@ -108,7 +108,7 @@ spec:
         - name: TASK_SVC_URL
           valueFrom:
             configMapKeyRef:
-              name: assignment-data
+              name: DATA
               key: TASK_SVC_URL
       restartPolicy: Never
   backoffLimit: 4

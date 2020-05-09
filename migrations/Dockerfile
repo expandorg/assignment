@@ -1,4 +1,4 @@
-FROM golang:1.12-alpine AS build-stage
+FROM golang:1.13-alpine AS build-stage
 
 RUN apk add --update make git
 RUN mkdir /migrations
